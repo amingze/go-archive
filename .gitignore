@@ -1,0 +1,7 @@
+/logs/*
+/log/*
+/data/
+/.idea/
+/.vscode/
+*.exe
+*.log

@@ -38,7 +38,7 @@ func QueryHosts(db *db.Database, queryFn func(a Atom) bool, limit int) ([]Atom, 
 	var results []Atom
 	var err error
 
-	ids, err := db.IDs("atoms")
+	ids, err := db.IDs(AtomTableName)
 	if err != nil {
 		return nil, err
 	}
@@ -62,6 +62,8 @@ func QueryHosts(db *db.Database, queryFn func(a Atom) bool, limit int) ([]Atom, 
 	return results, err
 }
 
+const AtomTableName = "atoms"
+
 func (a *Atom) Table() string {
-	return "atoms"
+	return AtomTableName
 }

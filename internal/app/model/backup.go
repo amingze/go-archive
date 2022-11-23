@@ -38,6 +38,8 @@ func (a *Backup) AfterFind(db *db.Database) error {
 	return nil
 }
 
+const BackupTableName = "backups"
+
 func (a *Backup) Table() string {
-	return "backups"
+	return BackupTableName
 }

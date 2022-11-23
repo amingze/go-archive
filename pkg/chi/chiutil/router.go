@@ -7,7 +7,9 @@ type Resource interface {
 }
 
 func SetupResource(mux *chi.Mux, pattern string, resources ...Resource) {
-	for _, resource := range resources {
-		mux.Route(pattern, resource.Register)
-	}
+	mux.Route(pattern, func(r chi.Router) {
+		for _, resource := range resources {
+			r.Group(resource.Register)
+		}
+	})
 }

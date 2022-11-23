@@ -22,13 +22,13 @@ func (Atom) Find(id int) (atom model.Atom, err error) {
 }
 
 func (Atom) Delete(id int) (err error) {
-	err = gdb.Delete("atoms", id)
+	err = gdb.Delete(model.AtomTableName, id)
 	return
 }
 
 func (Atom) FindLikeContent(search string) (result []model.Atom, err error) {
 	result = make([]model.Atom, 0)
-	ids, err := gdb.IDs("atoms")
+	ids, err := gdb.IDs(model.AtomTableName)
 	for _, id := range ids {
 		bean := model.Atom{}
 		err := gdb.Find(id, &bean)
@@ -44,7 +44,7 @@ func (Atom) FindLikeContent(search string) (result []model.Atom, err error) {
 
 func (Atom) FindByType(ty model.AtomType) (result []model.Atom, err error) {
 	result = make([]model.Atom, 0)
-	ids, err := gdb.IDs("atoms")
+	ids, err := gdb.IDs(model.AtomTableName)
 	for _, id := range ids {
 		bean := model.Atom{}
 		err := gdb.Find(id, &bean)

@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+var globalLock sync.RWMutex
+
 type Record interface {
 	SetID(int)
 	GetID() int
@@ -37,6 +39,8 @@ type Database struct {
 // New takes a datastorage and returns a pointer to a
 // Database struct.
 func New(ds datastorage) (*Database, error) {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	db := &Database{store: ds}
 	db.locks = make(map[string]*sync.RWMutex)
 	db.lastIDs = make(map[string]int)
@@ -78,6 +82,8 @@ func (db *Database) Close() error {
 // CreateTable takes a table name and creates and
 // initializes a new table.
 func (db *Database) CreateTable(tableName string) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	if db.TableExists(tableName) {
 		return dberr.ErrTableExists
 	}
@@ -100,6 +106,8 @@ func (db *Database) CreateTable(tableName string) error {
 // Delete takes a table name and record id and removes that
 // record from the database.
 func (db *Database) Delete(tableName string, id int) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	if !db.TableExists(tableName) {
 		return dberr.ErrNoTable
 	}
@@ -116,6 +124,8 @@ func (db *Database) Delete(tableName string, id int) error {
 
 // DropTable takes a table name and deletes the table.
 func (db *Database) DropTable(tableName string) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	if !db.TableExists(tableName) {
 		return dberr.ErrNoTable
 	}
@@ -140,6 +150,8 @@ func (db *Database) DropTable(tableName string) error {
 // implements the Record interface, finds the associated record from the
 // table, and populates the struct.
 func (db *Database) Find(id int, rec Record) error {
+	globalLock.RLock()
+	defer globalLock.RUnlock()
 	if !db.TableExists(rec.Table()) {
 		return dberr.ErrNoTable
 	}
@@ -168,6 +180,8 @@ func (db *Database) Find(id int, rec Record) error {
 // IDs takes a table name and returns a list of all record ids for
 // that table.
 func (db *Database) IDs(tableName string) ([]int, error) {
+	globalLock.RLock()
+	defer globalLock.RUnlock()
 	if !db.TableExists(tableName) {
 		return nil, dberr.ErrNoTable
 	}
@@ -187,6 +201,8 @@ func (db *Database) IDs(tableName string) ([]int, error) {
 // interface and adds a new record to the table.  It returns the
 // new record's id.
 func (db *Database) Insert(rec Record) (int, error) {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	if !db.TableExists(rec.Table()) {
 		return 0, dberr.ErrNoTable
 	}
@@ -219,6 +235,8 @@ func (db *Database) TableExists(tableName string) bool {
 // interface and updates the record in the table that has that record's
 // id.
 func (db *Database) Update(rec Record) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	if !db.TableExists(rec.Table()) {
 		return dberr.ErrNoTable
 	}

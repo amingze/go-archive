@@ -37,6 +37,7 @@ func (p *NoteResource) findAll(w http.ResponseWriter, r *http.Request) {
 	atomList, err := p.sAtom.List()
 	if err != nil {
 		response.JSONServerError(w, err)
+		return
 	}
 	response.JSONList(w, atomList, int64(len(atomList)))
 }
